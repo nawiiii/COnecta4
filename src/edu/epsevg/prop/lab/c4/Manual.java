@@ -13,7 +13,7 @@ public class Manual implements Jugador{
 
     @Override
     public String nom() {
-        return "Manual";
+        return "Manual ";
     }
     
 }
