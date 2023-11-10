@@ -133,10 +133,10 @@ public class ConEcta implements Jugador, IAuto
         
       }
     }
-    
+    return 0;
   }
   
-  public int evalua();
+ // public int evalua();
   
   @Override
   public int moviment(Tauler t, int color)
@@ -144,7 +144,7 @@ public class ConEcta implements Jugador, IAuto
     int col=0;    
     // t.pintaTaulerALaConsola(); // Fer servir puntualment per depurar. (Sino -> Mal rendiment)
     try {
-        col = heuristica(t, color);
+       // col = heuristica(t, color);
     } catch(Exception e) {
         e.printStackTrace();
     }
