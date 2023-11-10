@@ -22,6 +22,9 @@ public class ConEcta implements Jugador, IAuto
 
   private int TAULERS_EXPLORATS;
   private Boolean SomPrimers = false;
+  
+  private enum Dir {HORITZONTAL, VERTICAL, DIAGONAL_DRT, DIAGONAL_ESQ}
+  private Dir dir;
 
   // Matriu de pesos inicial.
   private int[][] matriuPesos = {{3, 4,  5, 7, 7, 5, 4, 3}, 
@@ -102,7 +105,7 @@ public class ConEcta implements Jugador, IAuto
   // Te prioritat bloquejar fitxes enemigues consecutives.
   // No es molt bona ja que inicialment nomes és necessaria 
   // la última fila de la matriu.
-  public int heuristica1(Tauler t) 
+  public int heuristica1(Tauler t, int color) 
   {
     TAULERS_EXPLORATS += 1; // Comptem quantes vegades hem calulat l'heuristica.
     Tauler ct = new Tauler(t);
@@ -125,26 +128,43 @@ public class ConEcta implements Jugador, IAuto
     return r;
   }
   
+  /**
+   *  Calculem l'heuristica segons el nombre de fitxes consecutives al tauler en 
+   *  Horitzontal, vertical o diagonal esq, diagonal dreta.  
+   */
   public int heuristica2(Tauler t)
   {
+    // per vertical (modifiquem c): [f, c], [f, c+1], [f, c+2], [f, c+3]
+    // per horitzontal (modifiquem f): [f, c], [f+1, c], [f+2, c], [f+3, c]
+    // per diagonal dreta/esq: [f, c], [f+1, c+1], [f+2, c+2], [f+3, c+3]
+    //                         []
     int centre = t.getMida() / 2;
     for (int f = 0; f < t.getMida(); ++f) {
       for (int c = centre; c > 0; --c) {
         
       }
     }
+    
     return 0;
   }
   
- // public int evalua();
+  public int evalua(Dir d, int col, int fil)
+  {
+    switch (d){
+      case Dir.HORITZONTAL:
+        break;
+      case Dir.VERTICAL:
+    }
+    return 0;
+  }
   
   @Override
   public int moviment(Tauler t, int color)
   {    
-    int col=0;    
+    int col = 0;    
     // t.pintaTaulerALaConsola(); // Fer servir puntualment per depurar. (Sino -> Mal rendiment)
     try {
-       // col = heuristica(t, color);
+        col = heuristica1(t, color);
     } catch(Exception e) {
         e.printStackTrace();
     }
