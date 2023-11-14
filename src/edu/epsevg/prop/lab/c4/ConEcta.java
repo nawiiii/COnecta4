@@ -53,7 +53,7 @@ public class ConEcta implements Jugador, IAuto
     _taulersExplorats = 0;
     _ambPoda = false;
     if (prof < 1 || prof % 2 != 0) {
-        throw new Exception("Ha de ser major a 1 (simular com a minim 2 tirades). I un nombre parell.");
+      throw new Exception("Ha de ser major a 1 (simular com a minim 2 tirades). I un nombre parell.");
     }
   } 
   
