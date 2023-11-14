@@ -1,5 +1,7 @@
 package edu.epsevg.prop.lab.c4;
 
+import java.lang.*;
+
 /*
     Preguntes:
     - Cal crear constructor per defecte? -> Juga2.java 
@@ -10,6 +12,9 @@ package edu.epsevg.prop.lab.c4;
 
   MINIMAX:
     Jo busco maxim benefici, enemic minimitza.
+
+    Si JO començo -> som maxim.
+    Si ENEMIC começa -> som minim.
 */
 
 /**
@@ -23,6 +28,11 @@ public class ConEcta implements Jugador, IAuto
   private int MAX = Integer.MAX_VALUE; // ∞
   private int MIN = Integer.MIN_VALUE; // -∞
   private enum Dir {HORITZONTAL, VERTICAL, DIAGONAL_DRT, DIAGONAL_ESQ}
+  
+  private boolean primeraJugada = true;
+  private boolean hemComencat;
+  int colorEnemic = 0;
+  int colorNostre = 0;
   
   // Atributs de la classe.
   private String _nom;
@@ -52,6 +62,7 @@ public class ConEcta implements Jugador, IAuto
     _nom = "ConEcta";
     _taulersExplorats = 0;
     _ambPoda = false;
+    _profunditatInicial = prof;
     if (prof < 1 || prof % 2 != 0) {
       throw new Exception("Ha de ser major a 1 (simular com a minim 2 tirades). I un nombre parell.");
     }
@@ -64,36 +75,42 @@ public class ConEcta implements Jugador, IAuto
    * @param profunditat:
    * @param col:
   */
-  private int min(Tauler t, int color, int profunditat, int col) 
+  private int min(Tauler t, int color, int profunditat, int col) // min: col 
   {
     int millorValor = MAX;
-    Boolean esTerminal = t.solucio(col, 1) || t.solucio(col, -1) || !t.espotmoure(); 
-    if (esTerminal) {
-      if (t.solucio(col, color)) { 
-        return MAX;
-      } 
-      else if (t.solucio(col, -color)) 
-      {
-        return MIN;
-      } 
-      else {
-        return 0;
-      }
-    }
-
-    if ((profunditat == 0)) {
-      int h = heuristica1(t, color);
-      return h;
-    }
-
-    for (int moviment = 0; moviment < t.getMida(); moviment++) {
-      Tauler tc = new Tauler(t);
-      if (tc.movpossible(moviment)) {
-        tc.afegeix(moviment, color);
-
-        int nouValor = max(tc, -color, profunditat - 1, moviment);
+    Tauler tc = new Tauler(t);
+    tc.afegeix(col, color);
+    
+    // Fi partida si : guanyo jo o guanya enemic o no es poden posar mes peçes al tauler (empat).
+//    Boolean fiPartida = tc.solucio(col, color) || tc.solucio(col, -color);
+//    
+//    if (fiPartida) {
+//      if (t.solucio(col, color)) { 
+//        return MAX;
+//      } 
+//      else if (t.solucio(col, -color)) 
+//      {
+//        return MIN;
+//      } 
+//      else {
+//        return 0;
+//      }
+//    }
+    
+  if (profunditat > 0){
+     System.out.println("PROF min: "+ profunditat);
+    for (int colJugada = 0; colJugada < t.getMida(); colJugada++) {
+      if (tc.movpossible(colJugada)) {
+        tc.afegeix(colJugada, color);
+        
+        int nouValor = max(tc, -color, profunditat - 1, colJugada);
         millorValor = Math.min(millorValor, nouValor);
       }
+    }
+  }
+    if ((profunditat == 0)) {
+      int h = evalua(t, color);
+      return h;
     }
 
     return millorValor;
@@ -102,9 +119,45 @@ public class ConEcta implements Jugador, IAuto
   /**
    * Funció max de minimax.
    */
-  public int max(Tauler t, int color, int profunditat, int mov)
+  public int max(Tauler t, int color, int profunditat, int col)
   {
-    return 0;
+     int millorValor = MIN;
+    Tauler tc = new Tauler(t);
+    tc.afegeix(col, color);
+    
+    // Fi partida si : guanyo jo o guanya enemic o no es poden posar mes peçes al tauler (empat).
+//    Boolean fiPartida = tc.solucio(col, color) || tc.solucio(col, -color);
+//    
+//    if (fiPartida) {
+//      if (t.solucio(col, color)) { 
+//        return MAX;
+//      } 
+//      else if (t.solucio(col, -color)) 
+//      {
+//        return MIN;
+//      } 
+//      else {
+//        return 0;
+//      }
+//    }
+    if (profunditat > 0){
+      System.out.println("PROF max: "+ profunditat);
+    for (int colJugada = 0; colJugada < t.getMida(); colJugada++) {
+      if (tc.movpossible(colJugada)) {
+        tc.afegeix(colJugada, color);
+        
+        int nouValor = min(tc, -color, profunditat - 1, colJugada);
+        millorValor = Math.max(millorValor, nouValor);
+      }
+    }
+    }
+
+    if ((profunditat == 0)) {
+      int h = evalua(t, color);
+      return h;
+    }
+
+    return millorValor;
   }
   
   // Cal recalcular la matriu una vegada s'ha fet una tirada. 
@@ -315,8 +368,8 @@ public class ConEcta implements Jugador, IAuto
     int h_final = 0;
     
     // (Fer) Millor mirar primer per columnes i començar pel centre.
-    for (int i = 0; i < t.getMida(); ++i) {
-      for (int j = 0; j < t.getMida(); ++j) {
+    for (int j = 0; j < t.getMida(); ++j) {
+      for (int i = 0; i < t.getMida(); ++i) {
         int colorFItxAct = t.getColor(j, j);
         if (colorFItxAct == color) {
           h_final += modificaMatPesos(t, color, Dir.VERTICAL, i, j) + 
@@ -338,20 +391,42 @@ public class ConEcta implements Jugador, IAuto
       }
     }
     
+    System.out.println("HEUR FIN: " + h_final);
     return h_final;
   }
   
   @Override
   public int moviment(Tauler t, int color)
-  {    
-    int col = 0;    
-    // t.pintaTaulerALaConsola(); // Fer servir puntualment per depurar. (Sino -> Mal rendiment)
-    try {
-      col = heuristica1(t, color);      
-    } catch(Exception e) {
-      e.printStackTrace();
+  {   
+    int colJugada = 0;
+
+    if (primeraJugada) { // Comprovem el primer esstat de la casella per saber si som primers o no. Nomes es fa una vegada (a l'inici de la partida).
+      for (int i = 0; i < t.getMida(); ++i) {
+          if (t.getColor(t.getMida() - 1, i) != 0) {
+            colorEnemic = t.getColor(t.getMida(), i);
+            colorNostre = -colorEnemic;
+          hemComencat = true;
+        } 
+      }
+      primeraJugada = false;
     }
-    return col;
+    else { // Fem el moviment normalment.
+      try {
+        for (int col = 0; col < t.getMida(); ++col) {
+          if (hemComencat) { // max amb el nostre color, min amb el color enemic.
+            colJugada = max(t, colorNostre, _profunditatInicial, col);
+          }
+          else if (hemComencat == false) { // max amb el color enemic, min amb el nostre color.
+            colJugada = min(t, colorEnemic, _profunditatInicial, col);
+          }
+        }
+        
+        //colJugada = evalua(t, color);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    return colJugada;
   }
   
   @Override

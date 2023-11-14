@@ -95,10 +95,10 @@ public class Juga2 extends javax.swing.JFrame {
         //</editor-fold>
 
         // Definiu al vostre gust els jugadors a enfrontar.
-        Jugador p1 = new ConEcta(8, false);
+        Jugador p2 = new ConEcta(8, false);
 
-        Jugador p2 = new Manual();
-        //Jugador p2 = new Profe(2,false);
+        //Jugador p2 = new Manual();
+        Jugador p1 = new Profe(2,false);
         //Jugador p2 = new Manual();
 
         boolean autoMode = true; //false = fer clic per la tirada
