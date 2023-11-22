@@ -3,9 +3,9 @@ package edu.epsevg.prop.lab.c4;
 import java.lang.*;
 
 /**
- * Jugador aleatori
- * "Alea jacta est"
- * @author 
+ * Jugador ConEcta
+ * @author Arturo Aragón Hidalgo
+ * @author Nawal Bouallala Safyoun
  */
 public class ConEcta implements Jugador, IAuto 
 {
@@ -32,9 +32,9 @@ public class ConEcta implements Jugador, IAuto
                                     {3, 4,  5,  7,  7,  5, 4, 3}};
 
     /**
-     * CONSTRUCTOR de Jugador ConEcta. Busca jugades fins la profunditat prof.
-     * @param prof: Profunditat maxima fins la que es cercarà a l'arbre de jugades.             
-     * @param ambPoda: Indiquem si volem fer minimax amb/sense poda alpha-beta. 
+     * Constructor de Jugador ConEcta. Busca jugades fins la profunditat prof.
+     * @param prof Profunditat maxima fins la que es cercarà a l'arbre de jugades.             
+     * @param ambPoda Indiquem si volem fer minimax amb/sense poda alpha-beta. 
     */
     public ConEcta(int prof, boolean ambPoda) throws Exception 
     {
@@ -91,12 +91,12 @@ public class ConEcta implements Jugador, IAuto
     
     /***
      * Funció per calcular la tirada amb l'heuristica maxima de totes les posibles tirades, i també té en compte si es amb poda o sense
-     * @param t: Estat acual del Tauler de la partida.
-     * @param columna: Conté la columna que estem tractant.
-     * @param profundidad: valor maxim de la profunditat de l'arbre de possibles estats de la partida.
-     * @param colactual: Color de la fitxa del jugador que jugarà (-1, 0, 1).
-     * @param alpha: rang superior per la poda alpha-beta.
-     * @param beta: rang inferior per la poda alpha-beta.
+     * @param t Estat acual del Tauler de la partida.
+     * @param columna Conté la columna que estem tractant.
+     * @param profundidad valor maxim de la profunditat de l'arbre de possibles estats de la partida.
+     * @param colactual Color de la fitxa del jugador que jugarà (-1, 0, 1).
+     * @param alpha rang superior per la poda alpha-beta.
+     * @param beta rang inferior per la poda alpha-beta.
      * @return Retorna el màxim de l'algorisme minimax.
      */
     private int max(Tauler t, int columna, int profundidad, int colactual, int alpha, int beta){
@@ -108,7 +108,7 @@ public class ConEcta implements Jugador, IAuto
             return best_valor;
         }
         else if (profundidad == 0 || !t.espotmoure()) {
-            return heuristica(t, colactual);
+            return heuristicaFitxesConsec(t, colactual);
         }
         else {
             for (int mov = 0; mov < t.getMida(); ++mov) {
@@ -132,12 +132,12 @@ public class ConEcta implements Jugador, IAuto
     /***
      * Funcio per calcular la tirada amb l'heuristica minima de totes les posibles tirades.
      * Segons el valor de _ambPoda farà minimax amb/sense poda alpha-beta.
-     * @param t: Estat acual del Tauler de la partida.
-     * @param columna: Conté la columna que estem tractant.
-     * @param profundidad: valor maxim de la profunditat de l'arbre de possibles estats de la partida.
-     * @param colactual: Color de la fitxa del jugador que jugarà (-1, 0, 1).
-     * @param alpha: Rang superior per la poda alpha-beta.
-     * @param beta: Rang inferior per la poda alpha-beta.
+     * @param t Estat acual del Tauler de la partida.
+     * @param columna Conté la columna que estem tractant.
+     * @param profundidad valor maxim de la profunditat de l'arbre de possibles estats de la partida.
+     * @param colactual Color de la fitxa del jugador que jugarà (-1, 0, 1).
+     * @param alpha Rang superior per la poda alpha-beta.
+     * @param beta Rang inferior per la poda alpha-beta.
      * @return Retorna el mínim de l'algorisme minimax.
      */
     private int min(Tauler t, int columna, int profundidad, int colactual, int alpha, int beta) {
@@ -149,7 +149,7 @@ public class ConEcta implements Jugador, IAuto
             return best_valor;
         }
         else if (profundidad==0 || !t.espotmoure()) {
-            return heuristica(t, colactual);
+            return heuristicaFitxesConsec(t, colactual);
         }
         else {
             for (int mov = 0; mov < t.getMida(); mov++){
@@ -172,8 +172,8 @@ public class ConEcta implements Jugador, IAuto
 
     /***
      * Funció auxiliar per obtenir l'últim color en un columna .
-     * @param t: Estat acual del Tauler de la partida.
-     * @param columna: columna sobre la que farem la cerca.
+     * @param t Estat acual del Tauler de la partida.
+     * @param columna columna sobre la que farem la cerca.
      * @return Retorna el color de la última fitxa col.locada en una columna.
      */
     private int obtenerUltimoColor(Tauler t, int columna){
@@ -186,8 +186,8 @@ public class ConEcta implements Jugador, IAuto
  
     /***
      * Heuristica amb una matriu amb diferents pesos per escollir columnes.
-     * @param t: Estat acual del Tauler de la partida.
-     * @param color: Color de la fitxa del jugador que jugarà (-1, 0, 1).
+     * @param t Estat acual del Tauler de la partida.
+     * @param color Color de la fitxa del jugador que jugarà (-1, 0, 1).
      * @return retorna la columna de la millor tirada, segons la matriu de Pesos.
      */
     public int heuristica1(Tauler t, int color) 
@@ -216,7 +216,7 @@ public class ConEcta implements Jugador, IAuto
    * @param color Color de la fitxa del jugador que jugarà (-1, 0, 1).
    * @return retorna la suma de totes les heuristicas calculades de totes les direccions
    */
-    public int heuristica(Tauler t, int color) {
+    public int heuristicaFitxesConsec(Tauler t, int color) {
         int h = 0; 
         for (int c = 0; c < t.getMida(); ++c) {
             for (int f = 0; f < t.getMida(); ++f) {
